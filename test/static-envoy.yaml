@@ -1,0 +1,95 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 }
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address: { address: 0.0.0.0, port_value: 10000 }
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          codec_type: AUTO
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: reviews
+              domains: 
+              - "reviews:9080"
+              - "reviews"
+              - "reviews.default:9080"
+              - "reviews.default"
+              - "reviews.default.svc:9080"
+              - "reviews.default.svc"
+              - "reviews.default.svc.cluster:9080"
+              - "reviews.default.svc.cluster"
+              - "reviews.default.svc.cluster.local:9080"
+              - "reviews.default.svc.cluster.local"
+              - "10.103.169.95:9080"
+              - "10.103.169.95"
+              routes:
+              - match: 
+                  prefix: "/" 
+                route: 
+                  cluster: reviews
+              virtual_clusters:
+              - pattern: "/reviews/[0-9]+"
+                name: "review_api"
+                method: GET
+            - name: ratings
+              domains: 
+              - "ratings:9080"
+              - "ratings"
+              - "ratings.default:9080"
+              - "ratings.default"
+              - "ratings.default.svc:9080"
+              - "ratings.default.svc"
+              - "ratings.default.svc.cluster:9080"
+              - "ratings.default.svc.cluster"
+              - "ratings.default.svc.cluster.local:9080"
+              - "ratings.default.svc.cluster.local"
+              - "10.106.182.111:9080"
+              - "10.106.182.111"
+              routes:
+              - match: 
+                  prefix: "/" 
+                route: 
+                  cluster: ratings
+          http_filters:
+          - name: envoy.router
+  clusters:
+  - name: reviews
+    connect_timeout: 1s
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    hosts: 
+    - socket_address: 
+        address: 10.1.4.100
+        port_value: 9080
+    - socket_address: 
+        address: 10.1.4.101
+        port_value: 9080
+    - socket_address: 
+        address: 10.1.4.102
+        port_value: 9080
+  - name: ratings
+    connect_timeout: 1s
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    hosts: 
+    - socket_address: 
+        address: 10.1.4.99
+        port_value: 9080
+stats_config:
+  stats_tags: 
+  - tag_name: "envoy.virtual_host"
+  - tag_name: "envoy.virtual_cluster"
+  - tag_name: "envoy.cluster_name"
+  - tag_name: "envoy.response_code"
+  - tag_name: "envoy.http_user_agent"
+  use_all_default_tags: false
