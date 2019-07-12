@@ -2,4 +2,4 @@
 make build.images
 
 # Introduction
-The iptable config will change network to redirect all incoming and outcoming traffic to envoy container listen port.
+Envoy docker with config, the iptable rule will change network to redirect all incoming and outcoming traffic to envoy  listen port.
