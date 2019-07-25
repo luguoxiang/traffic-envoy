@@ -1,28 +1,25 @@
 #!/bin/sh
 
-# Create a new chain for redirecting outbound traffic to the Envoy port.
-# In both chains, '-j RETURN' bypasses Envoy and '-j ENVOY_REDIRECT'
-# redirects to Envoy.
-iptables -t nat -N ENVOY_REDIRECT
-iptables -t nat -A ENVOY_REDIRECT -p tcp -j REDIRECT --to-port ${PROXY_PORT}
-
-# Use this chain also for redirecting inbound traffic to the common Envoy port
-# when not using TPROXY.
-iptables -t nat -N ENVOY_IN_REDIRECT
-iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port ${PROXY_PORT}
-
-# Create a new chain for selectively redirecting inbound packets to Envoy.
 iptables -t nat -N ENVOY_INBOUND
+iptables -t nat -N ENVOY_IN_REDIRECT
+
+iptables -t nat -N ENVOY_OUTPUT
+iptables -t nat -N ENVOY_REDIRECT
 
 # Jump to the ENVOY_INBOUND chain from PREROUTING chain for all tcp traffic.
 iptables -t nat -A PREROUTING -p tcp -j ENVOY_INBOUND
 
-for port in ${INBOUND_PORTS_INCLUDE}; do
-  iptables -t nat -A ENVOY_INBOUND -p tcp --dport ${port} -j ENVOY_IN_REDIRECT
-done
+# Use this chain also for redirecting inbound traffic to the common Envoy port
+iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port ${PROXY_PORT}
 
-# Create a new chain for selectively redirecting outbound packets to Envoy.
-iptables -t nat -N ENVOY_OUTPUT
+# Avoid infinite loops. Don't redirect admin traffic directly back to Envoy
+iptables -t nat -A ENVOY_INBOUND -p tcp --dport ${PROXY_MANAGE_PORT} -j RETURN
+
+# Redirect remaining outbound traffic to Envoy
+iptables -t nat -A ENVOY_INBOUND -p tcp -j ENVOY_IN_REDIRECT
+
+# Create a new chain for redirecting outbound traffic to the Envoy port.
+iptables -t nat -A ENVOY_REDIRECT -p tcp -j REDIRECT --to-port ${PROXY_PORT}
 
 # Jump to the ENVOY_OUTPUT chain from OUTPUT chain for all tcp traffic.
 iptables -t nat -A OUTPUT -p tcp -j ENVOY_OUTPUT

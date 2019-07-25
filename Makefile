@@ -1,5 +1,5 @@
 IMAGE_NAME=traffic-envoy-proxy
-VERSION=0.1
+VERSION=1.11.0
 DOCKER_REGISTRY=docker.io/luguoxiang
 
 .PHONY: build.images push.images

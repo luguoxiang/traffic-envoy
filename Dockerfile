@@ -1,4 +1,4 @@
-FROM envoyproxy/envoy:36f39c746eb7d03b762099b206403935b11972d8 
+FROM envoyproxy/envoy:v1.11.0
 RUN apt-get update
 RUN apt-get install apt-utils -y
 RUN apt-get install iptables -y
