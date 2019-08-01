@@ -8,6 +8,4 @@ all: build.images push.images
 
 build.images: 
 	docker build  -t ${DOCKER_REGISTRY}/$(IMAGE_NAME):$(VERSION) .  
-
-push.images:
 	docker push ${DOCKER_REGISTRY}/$(IMAGE_NAME):$(VERSION)
