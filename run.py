@@ -81,3 +81,5 @@ while True:
     sys.stdout.write(line + "\n")
     sys.stdout.flush()
   time.sleep(1)
+
+sigterm_handler(0, None)
