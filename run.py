@@ -34,7 +34,7 @@ if len(sys.argv) < 2:
 
 config_path = sys.argv[1]
 
-for key in ('PROXY_UID', 'PROXY_PORT', 'PROXY_MANAGE_PORT', 'CONTROL_PLANE_PORT', 'INBOUND_PORTS_INCLUDE'):
+for key in ('PROXY_UID', 'PROXY_PORT', 'PROXY_MANAGE_PORT', 'CONTROL_PLANE_PORT'):
   sys.stdout.write ("%s=%s\n" % (key, os.getenv(key)))
 
 uid = os.getenv("PROXY_UID")
