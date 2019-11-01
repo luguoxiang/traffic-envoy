@@ -60,7 +60,7 @@ with open(config_path, 'r') as config_file:
 with open(config_path, 'w') as config_file:
   config_file.write(config_data)
 
-cmd = [ "/usr/local/bin/envoy", "-c", config_path ]
+cmd = [ "/usr/local/bin/envoy", "-c", config_path , "--base-id", proxy_manage_port]
 
 if uid :
 	#check PROXY_PORT exists

@@ -14,6 +14,9 @@ iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port ${PROXY_PORT}
 
 # Avoid infinite loops. Don't redirect admin traffic directly back to Envoy
 iptables -t nat -A ENVOY_INBOUND -p tcp --dport ${PROXY_MANAGE_PORT} -j RETURN
+for port in ${INBOUND_SKIP_PORTS}; do
+	iptables -t nat -A ENVOY_INBOUND -p tcp --dport ${port} -j RETURN
+done
 
 # Redirect remaining outbound traffic to Envoy
 iptables -t nat -A ENVOY_INBOUND -p tcp -j ENVOY_IN_REDIRECT
@@ -27,6 +30,9 @@ iptables -t nat -A OUTPUT -p tcp -j ENVOY_OUTPUT
 # Avoid infinite loops. Don't redirect Envoy traffic directly back to
 # Envoy for non-loopback traffic.
 iptables -t nat -A ENVOY_OUTPUT -p tcp --dport ${PROXY_MANAGE_PORT} -j RETURN
+for port in ${OUTBOUND_SKIP_PORTS}; do
+	iptables -t nat -A ENVOY_OUTPUT -p tcp --dport ${port} -j RETURN
+done
 iptables -t nat -A ENVOY_OUTPUT -m owner --uid-owner ${PROXY_UID} -j RETURN
 iptables -t nat -A ENVOY_OUTPUT -m owner --gid-owner ${PROXY_UID} -j RETURN
 
