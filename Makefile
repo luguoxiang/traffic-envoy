@@ -1,5 +1,5 @@
 IMAGE_NAME=traffic-envoy-proxy
-VERSION=1.11.0
+VERSION=1.12.0
 DOCKER_REGISTRY=docker.io/luguoxiang
 
 .PHONY: build.images push.images
@@ -7,5 +7,5 @@ DOCKER_REGISTRY=docker.io/luguoxiang
 all: build.images push.images
 
 build.images: 
-	docker build  -t ${DOCKER_REGISTRY}/$(IMAGE_NAME):$(VERSION) .  
+	docker build --build-arg VERSION=$(VERSION) -t ${DOCKER_REGISTRY}/$(IMAGE_NAME):$(VERSION) .  
 	docker push ${DOCKER_REGISTRY}/$(IMAGE_NAME):$(VERSION)

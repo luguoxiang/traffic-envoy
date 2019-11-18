@@ -1,4 +1,5 @@
-FROM envoyproxy/envoy:v1.11.0
+ARG VERSION=1.12.0
+FROM envoyproxy/envoy:v$VERSION
 RUN apt-get update
 RUN apt-get install apt-utils -y
 RUN apt-get install iptables -y
